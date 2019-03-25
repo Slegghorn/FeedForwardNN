@@ -5,7 +5,7 @@ x = np.array([[1, 0]]).reshape(1,2)
 y = np.array([[1]]).reshape(1, 1)
 
 lr = 0.03
-epochs = 100
+epochs = 1000
 
 
 def Relu(x):
@@ -49,6 +49,7 @@ class NeuralNetwork():
                 delta2 = dRelu(l_1[1]) *self.w2[1] * dsig(l_2) * -2*(y - o)
                 delta3 = dRelu(l_1[2]) *self.w2[2] * dsig(l_2) * -2*(y - o)
                 delta4 = dRelu(l_1[3]) *self.w2[3] * dsig(l_2) * -2*(y - o)
+                delta5 =dsig(l_2) * -2*(y - o)
 
                 self.w1[0][0] -= x[0] * lr * delta1
                 self.w1[1][0] -= x[1] * lr * delta1
@@ -66,6 +67,12 @@ class NeuralNetwork():
                 self.b1[1] -= lr * delta2
                 self.b1[2] -= lr * delta3
                 self.b1[3] -= lr * delta4
+
+                self.w2[0] -= h[0] * lr * delta5
+                self.w2[1] -= h[1] * lr * delta5
+                self.w2[2] -= h[2] * lr * delta5
+                self.w2[3] -= h[3] * lr * delta5
+
                 print((y-o)**2)
 
 
