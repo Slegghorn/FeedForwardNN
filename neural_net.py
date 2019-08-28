@@ -2,11 +2,14 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-x = np.array([[1, 0]]).reshape(1,2)
-y = np.array([[1]]).reshape(1, 1)
+x = np.array([[1, 1], [1, 4], [1, 2], [1, 5], [2, 1], [2, 4], [2, 2], [2, 5], [4, 4], [4, 1], [4, 5], [4, 2], [5, 4], [5, 1], [5, 5], [5, 2]]).reshape(16,2)
+y = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, ]).reshape(16,1)
 
+mean = np.mean(x)
+std = np.std(x)
+x = (x - mean)/std
 lr = 0.03
-epochs = 10000
+epochs = 100
 
 
 def Relu(x):
@@ -25,10 +28,10 @@ def MSE(y_p, y):
 class NeuralNetwork():
 
     def __init__(self):
-        self.w1 = np.random.normal(0, 1.0, size = (2, 4)) * math.sqrt(2 / 2)
+        self.w1 = np.random.normal(0, 1.0, size = (2, 4))
         self.b1 = np.random.normal(size = (4))
 
-        self.w2 = np.random.normal(0, 1.0, size = (4, 1)) * math.sqrt(2 / 4)
+        self.w2 = np.random.normal(0, 1.0, size = (4, 1))
         self.b2 = np.random.normal(size = (1))
 
     def feedforward(self, x):
@@ -39,26 +42,30 @@ class NeuralNetwork():
     def train(self, x_train, y_train):
         for i in range(epochs):
             loss = 0
+            acc = []
             for x, y in zip(x_train, y_train):
                 l_1 = np.dot(x, self.w1) + self.b1
                 h = Relu(l_1)
                 l_2 = np.dot(h, self.w2) + self.b2
                 o = sig(l_2)
 
-                for j in range(4):
-                    delta = dRelu(l_1[j]) *self.w2[j] * dsig(l_2) * -2*(y - o)
-                    self.b1[j] -= lr * delta
-                    for i in range(2):
-                        self.w1[i][j] -= x[i] * lr * delta
+                for i in range(4):
+                    delta = dRelu(l_1[i]) *self.w2[i] * dsig(l_2) * -2*(y - o)
+                    self.b1[i] -= lr * delta
+                    for j in range(2):
+                        self.w1[j][i] -= x[j] * lr * delta
 
-                for j in range(1):
+                for i in range(1):
                     delta = dsig(l_2) * -2*(y - o)
-                    self.b2[j] -= lr * delta
-                    for i in range(4):
-                        self.w2[i][j] -= h[i] * lr * delta
+                    self.b2[i] -= lr * delta
+                    for j in range(4):
+                        self.w2[j][i] -= h[j] * lr * delta
 
                 loss += (y - o)**2
-            print(loss / 1)
+                a = 1 * ((1 * (o >= 0.5)) == y)
+                acc.append(a[0])
+            print(loss / len(x_train))
+            print(sum(acc) * 100/len(x_train), '%')
 
 
 
